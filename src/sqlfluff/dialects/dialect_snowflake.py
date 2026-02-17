@@ -1517,7 +1517,6 @@ class StatementSegment(ansi.StatementSegment):
             Ref("GetStatementSegment"),
             Ref("PutStatementSegment"),
             Ref("RemoveStatementSegment"),
-            Ref("CreateDatabaseFromShareStatementSegment"),
             Ref("CreateDatabaseRoleStatementSegment"),
             Ref("AlterRoleStatementSegment"),
             Ref("AlterStorageIntegrationSegment"),
@@ -3510,19 +3509,165 @@ class CreateCloneStatementSegment(BaseSegment):
     )
 
 
-class CreateDatabaseFromShareStatementSegment(BaseSegment):
-    """A snowflake `CREATE ... DATABASE FROM SHARE` statement.
+class CreateDatabaseStatementSegment(ansi.CreateDatabaseStatementSegment):
+    """A `CREATE DATABASE` statement.
+
+    Covers all variants:
+    - Standard database
+    - CREATE OR ALTER DATABASE
+    - CREATE DATABASE ... CLONE
+    - CREATE DATABASE ... FROM SHARE
+    - CREATE DATABASE ... FROM LISTING
+    - CREATE DATABASE ... FROM BACKUP SET
+    - CREATE DATABASE ... AS REPLICA OF
 
     https://docs.snowflake.com/en/sql-reference/sql/create-database.html
     """
 
-    type = "create_database_from_share_statement"
+    type = "create_database_statement"
     match_grammar = Sequence(
         "CREATE",
+        Ref("AlterOrReplaceGrammar", optional=True),
+        Sequence("TRANSIENT", optional=True),
         "DATABASE",
-        Ref("ObjectReferenceSegment"),
-        Sequence("FROM", "SHARE"),
-        Ref("ObjectReferenceSegment"),
+        Ref("IfNotExistsGrammar", optional=True),
+        Ref("DatabaseReferenceSegment"),
+        OneOf(
+            # FROM SHARE / FROM LISTING / FROM BACKUP SET
+            Sequence("FROM", "SHARE", Ref("ObjectReferenceSegment")),
+            Sequence("FROM", "LISTING", Ref("QuotedLiteralSegment")),
+            Sequence(
+                "FROM",
+                "BACKUP",
+                "SET",
+                Ref("ObjectReferenceSegment"),
+                "IDENTIFIER",
+                Ref("QuotedLiteralSegment"),
+            ),
+            # AS REPLICA OF
+            Sequence(
+                "AS",
+                "REPLICA",
+                "OF",
+                Ref("ObjectReferenceSegment"),
+                Sequence(
+                    "DATA_RETENTION_TIME_IN_DAYS",
+                    Ref("EqualsSegment"),
+                    Ref("NumericLiteralSegment"),
+                    optional=True,
+                ),
+            ),
+            # Standard database with optional CLONE and properties
+            Sequence(
+                Sequence(
+                    "CLONE",
+                    Ref("ObjectReferenceSegment"),
+                    OneOf(
+                        Ref("FromAtExpressionSegment"),
+                        Ref("FromBeforeExpressionSegment"),
+                        optional=True,
+                    ),
+                    Sequence(
+                        "IGNORE",
+                        "TABLES",
+                        "WITH",
+                        "INSUFFICIENT",
+                        "DATA",
+                        "RETENTION",
+                        optional=True,
+                    ),
+                    Sequence("IGNORE", "HYBRID", "TABLES", optional=True),
+                    optional=True,
+                ),
+                AnySetOf(
+                    Sequence(
+                        "DATA_RETENTION_TIME_IN_DAYS",
+                        Ref("EqualsSegment"),
+                        Ref("NumericLiteralSegment"),
+                    ),
+                    Sequence(
+                        "MAX_DATA_EXTENSION_TIME_IN_DAYS",
+                        Ref("EqualsSegment"),
+                        Ref("NumericLiteralSegment"),
+                    ),
+                    Sequence(
+                        "EXTERNAL_VOLUME",
+                        Ref("EqualsSegment"),
+                        Ref("QuotedLiteralSegment"),
+                    ),
+                    Sequence(
+                        "CATALOG",
+                        Ref("EqualsSegment"),
+                        Ref("QuotedLiteralSegment"),
+                    ),
+                    Sequence(
+                        "REPLACE_INVALID_CHARACTERS",
+                        Ref("EqualsSegment"),
+                        Ref("BooleanLiteralGrammar"),
+                    ),
+                    Sequence(
+                        "DEFAULT_DDL_COLLATION",
+                        Ref("EqualsSegment"),
+                        Ref("QuotedLiteralSegment"),
+                    ),
+                    Sequence(
+                        "STORAGE_SERIALIZATION_POLICY",
+                        Ref("EqualsSegment"),
+                        OneOf("COMPATIBLE", "OPTIMIZED"),
+                    ),
+                    Ref("CommentEqualsClauseSegment"),
+                    Sequence(
+                        "CATALOG_SYNC",
+                        Ref("EqualsSegment"),
+                        Ref("QuotedLiteralSegment"),
+                    ),
+                    Sequence(
+                        "CATALOG_SYNC_NAMESPACE_MODE",
+                        Ref("EqualsSegment"),
+                        OneOf("NEST", "FLATTEN"),
+                    ),
+                    Sequence(
+                        "CATALOG_SYNC_NAMESPACE_FLATTEN_DELIMITER",
+                        Ref("EqualsSegment"),
+                        Ref("QuotedLiteralSegment"),
+                    ),
+                    Ref("LogLevelEqualsSegment"),
+                    Sequence(
+                        "METRIC_LEVEL",
+                        Ref("EqualsSegment"),
+                        OneOf("ALL", "NONE"),
+                    ),
+                    Ref("TraceLevelEqualsSegment"),
+                    Sequence(
+                        "OBJECT_VISIBILITY",
+                        Ref("EqualsSegment"),
+                        OneOf(Ref("QuotedLiteralSegment"), "PRIVILEGED"),
+                    ),
+                    Sequence(
+                        "ENABLE_DATA_COMPACTION",
+                        Ref("EqualsSegment"),
+                        Ref("BooleanLiteralGrammar"),
+                    ),
+                    optional=True,
+                ),
+                Ref("TagBracketedEqualsSegment", optional=True),
+                Sequence(
+                    "WITH",
+                    "CONTACT",
+                    Bracketed(
+                        Delimited(
+                            Sequence(
+                                Ref("PurposeGrammar"),
+                                Ref("EqualsSegment"),
+                                Ref("ObjectReferenceSegment"),
+                            )
+                        )
+                    ),
+                    optional=True,
+                ),
+            ),
+            optional=True,
+        ),
     )
 
 
