@@ -34,3 +34,8 @@ start: ## Start the development container
 
 stop: ## Stop the development container
 	docker-compose stop
+
+test-snowflake:
+	tox -e generate-fixture-yml -- -d snowflake
+	tox -e py -- test/dialects/ -k snowflake
+	
