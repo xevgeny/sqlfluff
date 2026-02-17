@@ -3362,6 +3362,7 @@ class AccessPermissionSegment(ansi.AccessPermissionSegment):
                     ),
                 ),
                 Sequence("IMPORTED", "PRIVILEGES"),
+                Sequence("EVOLVE", "SCHEMA"),
                 "APPLY",
                 "CONNECT",
                 "CREATE",

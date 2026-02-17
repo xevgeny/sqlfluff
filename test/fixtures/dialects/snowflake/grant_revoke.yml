@@ -3,7 +3,7 @@
 # computed by SQLFluff when running the tests. Please run
 # `python test/generate_parse_fixture_yml.py`  to generate them after adding or
 # altering SQL files.
-_hash: a67ef733b964d84d3610036aa4aec341d0204c30735fc515282c76313142c730
+_hash: c9a2e389403e9faefb5272fcd93bf699151bdeed8d9a520b95157e3c0e4a0a07
 file:
 - statement:
     access_statement:
@@ -2392,4 +2392,53 @@ file:
           keyword: ROLE
           role_reference:
             naked_identifier: bar
+- statement_terminator: ;
+- statement:
+    access_statement:
+      grant_statement:
+      - keyword: GRANT
+      - access_permissions:
+          access_permission:
+          - keyword: EVOLVE
+          - keyword: SCHEMA
+      - keyword: 'ON'
+      - access_object:
+          access_schema_object:
+            keyword: TABLE
+          object_reference:
+          - naked_identifier: MYDB
+          - dot: .
+          - naked_identifier: MYSCHEMA
+          - dot: .
+          - naked_identifier: MYTABLE
+      - keyword: TO
+      - access_target:
+          keyword: ROLE
+          role_reference:
+            naked_identifier: ANALYST
+- statement_terminator: ;
+- statement:
+    access_statement:
+      revoke_statement:
+      - keyword: REVOKE
+      - access_permissions:
+          access_permission:
+          - keyword: EVOLVE
+          - keyword: SCHEMA
+      - keyword: 'ON'
+      - access_object:
+        - keyword: ALL
+        - access_schema_plural_object:
+            keyword: TABLES
+        - keyword: IN
+        - keyword: SCHEMA
+        - object_reference:
+          - naked_identifier: MYDB
+          - dot: .
+          - naked_identifier: MYSCHEMA
+      - keyword: FROM
+      - access_target:
+          keyword: ROLE
+          role_reference:
+            naked_identifier: ANALYST
 - statement_terminator: ;
