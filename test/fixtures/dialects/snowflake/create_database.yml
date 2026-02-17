@@ -3,7 +3,7 @@
 # computed by SQLFluff when running the tests. Please run
 # `python test/generate_parse_fixture_yml.py`  to generate them after adding or
 # altering SQL files.
-_hash: 3d32bc528920b960b1d929edd7773c3b5e7d3382d43c5ef936b3d313a000b0d2
+_hash: 8669f208de1ae677a9225f30172d6ad9d739792838fd3fbc187a31b91b954eac
 file:
 - statement:
     create_database_statement:
@@ -245,23 +245,6 @@ file:
     - database_reference:
         naked_identifier: MY_DATABASE
     - tag_bracketed_equals:
-        keyword: TAG
-        bracketed:
-          start_bracket: (
-          tag_reference:
-            naked_identifier: env
-          comparison_operator:
-            raw_comparison_operator: '='
-          quoted_literal: "'production'"
-          end_bracket: )
-- statement_terminator: ;
-- statement:
-    create_database_statement:
-    - keyword: CREATE
-    - keyword: DATABASE
-    - database_reference:
-        naked_identifier: MY_DATABASE
-    - tag_bracketed_equals:
       - keyword: WITH
       - keyword: TAG
       - bracketed:
@@ -319,22 +302,7 @@ file:
     - keyword: CATALOG_SYNC_NAMESPACE_FLATTEN_DELIMITER
     - comparison_operator:
         raw_comparison_operator: '='
-    - quoted_literal: "'/'"
-- statement_terminator: ;
-- statement:
-    create_database_statement:
-    - keyword: CREATE
-    - keyword: DATABASE
-    - database_reference:
-        naked_identifier: MY_DATABASE
-    - keyword: CATALOG_SYNC
-    - comparison_operator:
-        raw_comparison_operator: '='
-    - quoted_literal: "'my_open_catalog_integration'"
-    - keyword: CATALOG_SYNC_NAMESPACE_MODE
-    - comparison_operator:
-        raw_comparison_operator: '='
-    - keyword: NEST
+    - catalog_sync_namespace_flatten_delimeter: "'-'"
 - statement_terminator: ;
 - statement:
     create_database_statement:
@@ -385,7 +353,7 @@ file:
           keyword: STATEMENT
           parameter_assigner: =>
           expression:
-            quoted_literal: "'8e5d0ca9-005e-44e6-b858-a8f5b37c5726'"
+            quoted_literal: "'01b71944-0001-b181-0000-0129032279f6'"
           end_bracket: )
 - statement_terminator: ;
 - statement:
@@ -404,9 +372,7 @@ file:
           keyword: OFFSET
           parameter_assigner: =>
           expression:
-            numeric_literal:
-              sign_indicator: '-'
-              numeric_literal: '3600'
+            numeric_literal: '3600'
           end_bracket: )
 - statement_terminator: ;
 - statement:
@@ -599,7 +565,7 @@ file:
     - keyword: CATALOG_SYNC_NAMESPACE_FLATTEN_DELIMITER
     - comparison_operator:
         raw_comparison_operator: '='
-    - quoted_literal: "'.'"
+    - catalog_sync_namespace_flatten_delimeter: "'$'"
     - log_level_equals:
       - keyword: LOG_LEVEL
       - comparison_operator:
