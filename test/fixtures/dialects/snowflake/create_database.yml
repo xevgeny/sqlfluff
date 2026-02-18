@@ -3,7 +3,7 @@
 # computed by SQLFluff when running the tests. Please run
 # `python test/generate_parse_fixture_yml.py`  to generate them after adding or
 # altering SQL files.
-_hash: 8669f208de1ae677a9225f30172d6ad9d739792838fd3fbc187a31b91b954eac
+_hash: dc85879d3ad69d614486a2d645a3f330f0000128289fb2c9cdc4c601e4d6d14e
 file:
 - statement:
     create_database_statement:
@@ -508,6 +508,18 @@ file:
     - comparison_operator:
         raw_comparison_operator: '='
     - numeric_literal: '10'
+- statement_terminator: ;
+- statement:
+    create_database_statement:
+    - keyword: CREATE
+    - keyword: DATABASE
+    - database_reference:
+        naked_identifier: MY_DATABASE
+    - keyword: OBJECT_VISIBILITY
+    - comparison_operator:
+        raw_comparison_operator: '='
+    - udf_body: "$$\norganization_targets:\n  - account: acme_engineering\n  - account:\
+        \ acme_marketing\n  - account: acme_sales\n$$"
 - statement_terminator: ;
 - statement:
     create_database_statement:

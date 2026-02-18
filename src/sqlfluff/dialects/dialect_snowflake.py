@@ -3645,12 +3645,12 @@ class CreateDatabaseStatementSegment(ansi.CreateDatabaseStatementSegment):
                         OneOf("ALL", "NONE"),
                     ),
                     Ref("TraceLevelEqualsSegment"),
-                    # TODO: add support of object visibility yaml spec, only PRIVILEGED is supported
                     # OBJECT_VISIBILITY = { object_visibility_spec | PRIVILEGED }
+                    # object_visibility_spec is a yaml specification
                     Sequence(
                         "OBJECT_VISIBILITY",
                         Ref("EqualsSegment"),
-                        "PRIVILEGED"
+                        OneOf("PRIVILEGED", Ref("DollarQuotedUDFBody")),
                     ),
                     Sequence(
                         "ENABLE_DATA_COMPACTION",

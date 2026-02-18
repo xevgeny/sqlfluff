@@ -60,6 +60,15 @@ CREATE DATABASE MY_DATABASE
     AS REPLICA OF my_org.my_account.my_primary_db
     DATA_RETENTION_TIME_IN_DAYS = 10;
 
+-- OBJECT_VISIBILITY with YAML spec
+CREATE DATABASE MY_DATABASE OBJECT_VISIBILITY = 
+$$
+organization_targets:
+  - account: acme_engineering
+  - account: acme_marketing
+  - account: acme_sales
+$$;
+
 -- Full example
 CREATE OR REPLACE TRANSIENT DATABASE IF NOT EXISTS MY_DATABASE
     DATA_RETENTION_TIME_IN_DAYS = 30
